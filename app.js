@@ -44,8 +44,8 @@ app.get("/download", async (req, res) => {
 });
 
 //
-app.listen(8080, () => {
-  console.log("Lol everyting in 8080");
+app.listen(process.env.PORT || 5000, () => {
+  console.log(`Lol listing in ${process.env.PORT || 5000}`);
 });
 
 /*
