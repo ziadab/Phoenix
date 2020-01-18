@@ -1,8 +1,9 @@
 const route = require("express").Router();
+const path = require("path");
 
-route.get("/download", async (req, res) => {
-  const fileName = req.query.filename;
-  res.sendFile(__dirname + `/Songs/` + fileName + ".mp3");
+route.get("/", async (req, res) => {
+  const fileName = req.query.id;
+  res.sendFile(path.join(__dirname, "../songs/") + fileName + ".mp3");
   res.setHeader("Content-type", "audio/mpeg");
 });
 

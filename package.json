@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.19.1",
+    "browser-id3-writer": "^4.3.0",
     "express": "^4.17.1",
     "find-remove": "^2.0.0",
     "fluent-ffmpeg": "^2.1.2",
