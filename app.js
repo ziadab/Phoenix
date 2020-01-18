@@ -1,47 +1,10 @@
+const convert = require("./routes/convert");
+const download = require("./routes/convert");
 const app = require("express")();
-const ytdl = require("ytdl-core");
-var ffmpeg = require("fluent-ffmpeg");
-var findRemoveSync = require("find-remove");
-const url = require("url");
 
-app.get("/convert", async (req, res) => {
-  // Delete All Older file than 1 hour
-  findRemoveSync(__dirname + "/Songs", { age: { seconds: 3600 } });
+app.use("/convert", convert);
 
-  // Converting then redirect to download page
-  let title;
-  const stream = ytdl(req.query.videoLink);
-  const info = await ytdl.getInfo(req.query.videoLink);
-  const fileName = Math.random()
-    .toString(36)
-    .substring(7);
-
-  var proc = new ffmpeg({ source: stream });
-  proc
-    .withAudioCodec("libmp3lame")
-    .toFormat("mp3")
-    .saveToFile(__dirname + `/Songs/` + fileName + ".mp3")
-    .on("progress", progress => {
-      // console.log(JSON.stringify(progress));
-      console.log("Processing: " + progress.targetSize + " KB converted");
-    })
-    .on("end", () => {
-      res.redirect(
-        url.format({
-          pathname: "/download",
-          query: {
-            filename: fileName
-          }
-        })
-      );
-    });
-});
-
-app.get("/download", async (req, res) => {
-  const fileName = req.query.filename;
-  res.sendFile(__dirname + `/Songs/` + fileName + ".mp3");
-  res.setHeader("Content-type", "audio/mpeg");
-});
+app.use("/download", download);
 
 //
 app.listen(process.env.PORT || 5000, () => {
