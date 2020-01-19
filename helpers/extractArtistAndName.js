@@ -1,4 +1,4 @@
-function extractStuff(title) {
+module.exports = title => {
   if (title.indexOf("(") !== -1) {
     const texty = title.split("(")[0];
     if (title.indexOf("-") !== -1) {
@@ -32,4 +32,4 @@ function extractStuff(title) {
   } else {
     return [null, null];
   }
-}
+};
