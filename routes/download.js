@@ -3,7 +3,6 @@ const getBuffer = require("../helpers/getBuffer");
 const makeRequest = require("../helpers/makingRequest");
 const path = require("path");
 const fs = require("fs");
-const { Readable } = require("stream");
 
 const ID3Writer = require("browser-id3-writer");
 
@@ -16,7 +15,7 @@ route.get("/", async (req, res) => {
   );
 
   const resp = await makeRequest(track, artist);
-  //console.log(resp);
+
   if (resp != null) {
     // Getting data
     const [titleF, artistF, albumName, imageBuffer] = resp;
@@ -35,16 +34,7 @@ route.get("/", async (req, res) => {
 
     writer.addTag();
 
-    // Sett data on Stream Object
-    const final = new Readable();
-    final._read = () => {};
-    final.push(Buffer.from(writer.arrayBuffer));
-
     // Download it xD
-    // res.set(
-    //   "Content-disposition",
-    //   `attachment; filename=${artistF}-${titleF}.mp3`
-    // );
     res.setHeader("Content-type", "audio/mpeg");
     res.setHeader(
       "Content-disposition",
