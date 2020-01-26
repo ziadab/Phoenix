@@ -5,6 +5,7 @@ const url = require("url");
 const path = require("path");
 const fs = require("fs");
 const getData = require("../helpers/extractArtistAndName");
+const rimraf = require("rimraf");
 
 const route = require("express").Router();
 
@@ -13,7 +14,28 @@ route.get("/", async (req, res) => {
   fs.mkdirSync("songs", { recursive: true });
 
   // Delete All Older file than 1 hour
-  findRemoveSync(__dirname + "/Songs", { age: { seconds: 3600 } });
+  var uploadsDir = path.join(__dirname, "../songs/");
+
+  fs.readdir(uploadsDir, function(err, files) {
+    files.forEach(function(file, index) {
+      fs.stat(path.join(uploadsDir, file), function(err, stat) {
+        var endTime, now;
+        if (err) {
+          return console.error(err);
+        }
+        now = new Date().getTime();
+        endTime = new Date(stat.ctime).getTime() + 3600000;
+        if (now > endTime) {
+          return rimraf(path.join(uploadsDir, file), function(err) {
+            if (err) {
+              return console.error(err);
+            }
+            console.log("successfully deleted");
+          });
+        }
+      });
+    });
+  });
 
   // Converting then redirect to download page
   let title;

@@ -13,9 +13,11 @@
   "dependencies": {
     "axios": "^0.19.1",
     "browser-id3-writer": "^4.3.0",
+    "content-disposition": "^0.5.3",
     "express": "^4.17.1",
     "find-remove": "^2.0.0",
     "fluent-ffmpeg": "^2.1.2",
+    "rimraf": "^3.0.0",
     "ytdl-core": "^1.0.6"
   }
 }

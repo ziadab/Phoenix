@@ -3,6 +3,7 @@ const getBuffer = require("../helpers/getBuffer");
 const makeRequest = require("../helpers/makingRequest");
 const path = require("path");
 const fs = require("fs");
+var contentDisposition = require("content-disposition");
 
 const ID3Writer = require("browser-id3-writer");
 
@@ -38,8 +39,9 @@ route.get("/", async (req, res) => {
     res.setHeader("Content-type", "audio/mpeg");
     res.setHeader(
       "Content-disposition",
-      `attachment; filename=${artistF[0].trim()} - ${titleF.trim()}.mp3`
+      contentDisposition(artistF[0].trim() + "-" + titleF.trim() + ".mp3")
     );
+    //'Content-Disposition': contentDisposition(filename)
     res.end(Buffer.from(writer.arrayBuffer));
   } else {
     res.setHeader("Content-type", "audio/mpeg");
