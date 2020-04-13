@@ -14,7 +14,7 @@ module.exports = async (track, artist) => {
     const albumName = data.albumName;
     const title = data.title;
 
-    return [title, artist, albumName, coverImage];
+    return [title, artist, albumName, coverImage, data.albumCover];
   } catch (e) {
     return null;
   }

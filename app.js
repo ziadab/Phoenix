@@ -1,3 +1,4 @@
+require("dotenv").config()
 const convert = require("./routes/convert");
 const download = require("./routes/download");
 const app = require("express")();

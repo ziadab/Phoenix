@@ -1,5 +1,4 @@
 const route = require("express").Router();
-const getBuffer = require("../helpers/getBuffer");
 const makeRequest = require("../helpers/makingRequest");
 const path = require("path");
 const fs = require("fs");
@@ -27,7 +26,7 @@ route.get("/", async (req, res) => {
       .setFrame("APIC", {
         type: 3,
         data: imageBuffer,
-        description: "https://github.com/ziadab"
+        description: "https://github.com/ziadab",
       })
       .setFrame("TIT2", titleF)
       .setFrame("TALB", albumName)
