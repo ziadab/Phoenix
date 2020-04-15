@@ -16,9 +16,9 @@ route.get("/", async (req, res) => {
 
   const resp = await makeRequest(track, artist);
 
-  if (resp != null) {
+  if (resp.data != null) {
     // Getting data
-    const [titleF, artistF, albumName, imageBuffer] = resp;
+    const [titleF, artistF, albumName, imageBuffer] = resp.data;
     // Get Buffred Image
     // Injecting data
     const writer = new ID3Writer(song);

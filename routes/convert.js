@@ -45,7 +45,17 @@ route.get("/", async (req, res) => {
   const info = await ytdl.getInfo(req.query.link);
   const [artist, track] = getData(info.title);
   const resp = await makeRequest(track, artist);
-  const [titleF, artistF, albumName, imageBuffer, albumCover] = resp;
+  let error, data, titleF, artistF, albumName, coverImage, albumCover;
+  console.log(resp);
+  if (resp.error !== null) {
+    error = resp.error;
+  } else {
+    data = resp.data;
+  }
+  try {
+    [titleF, artistF, albumName, coverImage, albumCover] = data;
+  } catch (e) {}
+
   const fileName = Math.random().toString(36).substring(7);
 
   var proc = new ffmpeg({ source: stream });
@@ -59,6 +69,7 @@ route.get("/", async (req, res) => {
         titleF,
         artistF,
         albumName,
+        error,
         downloadLink:
           `http://${process.env.HOST}:${process.env.PORT || 5000}` +
           url.format({

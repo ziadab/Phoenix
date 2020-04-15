@@ -2,9 +2,13 @@ const axios = require("axios");
 const getBuffer = require("./getBuffer");
 
 module.exports = async (track, artist) => {
+  const katarina = { data: null, error: null };
   const link = encodeURI(
-    `https://spotify-grabber.herokuapp.com/?title=${artist} ${track}&type=track`
+    `https://spotify-grabber.herokuapp.com/?title=${artist || ""}${
+      track || ""
+    }&type=track`
   );
+  //console.log(link);
   try {
     const res = await axios.get(link);
     const data = res.data;
@@ -14,8 +18,10 @@ module.exports = async (track, artist) => {
     const albumName = data.albumName;
     const title = data.title;
 
-    return [title, artist, albumName, coverImage, data.albumCover];
+    katarina["data"] = [title, artist, albumName, coverImage, data.albumCover];
   } catch (e) {
-    return null;
+    katarina["error"] = e.response.data.error;
   }
+
+  return katarina;
 };
