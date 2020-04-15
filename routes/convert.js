@@ -46,7 +46,7 @@ route.get("/", async (req, res) => {
   const [artist, track] = getData(info.title);
   const resp = await makeRequest(track, artist);
   let error, data, titleF, artistF, albumName, coverImage, albumCover;
-  console.log(resp);
+  //console.log(resp);
   if (resp.error !== null) {
     error = resp.error;
   } else {

@@ -13,8 +13,9 @@ route.get("/", async (req, res) => {
   const song = fs.readFileSync(
     path.join(__dirname, "../songs/") + fileName + ".mp3"
   );
-
+  // console.log(req.query);
   const resp = await makeRequest(track, artist);
+  // console.log(resp);
 
   if (resp.data != null) {
     // Getting data
