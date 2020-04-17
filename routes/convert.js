@@ -1,12 +1,14 @@
 require("dotenv").config();
+const ColorThief = require("colorthief");
 const ytdl = require("ytdl-core");
 const ffmpeg = require("fluent-ffmpeg");
 const makeRequest = require("../helpers/makingRequest");
+const removeOld = require("../helpers/deleteOldSong");
 const url = require("url");
 const path = require("path");
 const fs = require("fs");
 const getData = require("../helpers/extractArtistAndName");
-const rimraf = require("rimraf");
+const rgbToHex = require("../helpers/rgbToHex");
 
 const route = require("express").Router();
 
@@ -15,28 +17,6 @@ route.get("/", async (req, res) => {
   fs.mkdirSync("songs", { recursive: true });
 
   // Delete All Older file than 1 hour
-  var uploadsDir = path.join(__dirname, "../songs/");
-
-  fs.readdir(uploadsDir, function (err, files) {
-    files.forEach(function (file, index) {
-      fs.stat(path.join(uploadsDir, file), function (err, stat) {
-        var endTime, now;
-        if (err) {
-          return console.error(err);
-        }
-        now = new Date().getTime();
-        endTime = new Date(stat.ctime).getTime() + 3600000;
-        if (now > endTime) {
-          return rimraf(path.join(uploadsDir, file), function (err) {
-            if (err) {
-              return console.error(err);
-            }
-            console.log("successfully deleted");
-          });
-        }
-      });
-    });
-  });
 
   // Converting then redirect to download page
   let title;
@@ -44,8 +24,10 @@ route.get("/", async (req, res) => {
   const stream = ytdl(req.query.link);
   const info = await ytdl.getInfo(req.query.link);
   const [artist, track] = getData(info.title);
+  console.log(artist, track);
   const resp = await makeRequest(track, artist);
   let error, data, titleF, artistF, albumName, coverImage, albumCover;
+
   //console.log(resp);
   if (resp.error !== null) {
     error = resp.error;
@@ -63,26 +45,42 @@ route.get("/", async (req, res) => {
     .withAudioCodec("libmp3lame")
     .toFormat("mp3")
     .output(path.join(__dirname, "../songs/") + fileName + ".mp3")
-    .on("end", () => {
-      res.json({
-        albumCover,
-        titleF,
-        artistF,
-        albumName,
-        error,
-        downloadLink:
-          `http://${process.env.HOST}:${process.env.PORT || 5000}` +
-          url.format({
-            pathname: "/download",
-            query: {
-              id: fileName,
-              artist,
-              track,
-              //data: Buffer.from(JSON.stringify(resp)).toString("base64"),
-            },
-          }),
-      });
+    .on("start", () => {
+      removeOld();
     })
+    .on("end", async () => {
+      //console.log(resp);
+      const downloadLink =
+        `http://${process.env.HOST}:${process.env.PORT || 5000}` +
+        url.format({
+          pathname: "/download",
+          query: {
+            id: fileName,
+            artist,
+            track,
+          },
+        });
+
+      if (resp.error !== null) {
+        res.status(404).json({
+          error,
+          downloadLink,
+        });
+      } else {
+        const background = await ColorThief.getColor(albumCover);
+        const hex = rgbToHex(background[0], background[1], background[2]);
+        res.status(200).json({
+          albumCover,
+          title: titleF,
+          artist: artistF,
+          albumName,
+          downloadLink,
+          background: hex,
+          error,
+        });
+      }
+    })
+
     .on("progress", (chunk) => {
       console.log(chunk.targetSize);
     })
